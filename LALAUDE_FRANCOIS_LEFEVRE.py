@@ -6,8 +6,10 @@ contre des ennemis en lançant des projectiles avant de se faire tuer.
 
 Authors : Martin LALAUDE, Valentine FRANCOIS, Pierrick LEFEVRE
 Version : v_4
-URL Github : 
+URL Github : https://github.com/RTxmrt/nsi-fin-annee-final
 
+Nous nous sommes aidé de la video pygame explicatif de Graven et des conseils d'un programmeur professionel
+Pour les images, nous les avons trouvées sur internet que nous avons par la suite modifiées
 """
 import pygame
 import math
@@ -18,8 +20,8 @@ class Game:
     def __init__(self):
         self.jeu_demarre = False
         self.all_players = pygame.sprite.Group()
-        self.player = player(self)
-        self.all_players.add(self.player)
+        self.joueur = joueur(self)
+        self.all_players.add(self.joueur)
         self.tous_les_ennemis = pygame.sprite.Group()
         self.pressed = {}
 
@@ -30,28 +32,28 @@ class Game:
 
     def game_over(self):
         self.tous_les_ennemis = pygame.sprite.Group()
-        self.player.health = self.player.max_health
+        self.joueur.health = self.joueur.max_health
         self.jeu_demarre = False
     def update(self, surface):
-        surface.blit(self.player.image, self.player.rect)
+        surface.blit(self.joueur.image, self.joueur.rect)
 
-        self.player.barre_de_vie(surface)
+        self.joueur.barre_de_vie(surface)
 
-        for projectile in self.player.all_projectiles:
+        for projectile in self.joueur.all_projectiles:
             projectile.move()
 
         for ennemis in self.tous_les_ennemis:
             ennemis.forward()
             ennemis.barre_de_vie(surface)
 
-        self.player.all_projectiles.draw(surface)
+        self.joueur.all_projectiles.draw(surface)
 
         self.tous_les_ennemis.draw(surface)
 
-        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x + self.player.rect.width < surface.get_width():
-            self.player.move_right()
-        elif self.pressed.get(pygame.K_LEFT) and self.player.rect.x > 0:
-            self.player.move_left()
+        if self.pressed.get(pygame.K_RIGHT) and self.joueur.rect.x + self.joueur.rect.width < surface.get_width():
+            self.joueur.move_right()
+        elif self.pressed.get(pygame.K_LEFT) and self.joueur.rect.x > 0:
+            self.joueur.move_left()
 
     def check_collision(self, sprite, group):
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
@@ -59,14 +61,14 @@ class Game:
         ennemi = Ennemis(self)
         self.tous_les_ennemis.add(ennemi)
         
-class player(pygame.sprite.Sprite):
+class joueur(pygame.sprite.Sprite):
     def __init__(self, game):
         super().__init__()
         self.game = game
         self.health = 200
         self.max_health = 200
         self.attack = 10
-        self.velocity = 2
+        self.velocity = 10
         self.all_projectiles = pygame.sprite.Group()
         self.image = pygame.image.load('protagoniste.png')
         self.image = pygame.transform.scale(self.image, (225, 235))
@@ -74,7 +76,7 @@ class player(pygame.sprite.Sprite):
         self.rect.x = 400
         self.rect.y = 270
 
-    def damage(self, amount):
+    def degat(self, amount):
         if self.health - amount > amount:
             self.health -= amount
         else:
@@ -87,25 +89,25 @@ class player(pygame.sprite.Sprite):
         pygame.draw.rect(surface, fond_barre_vie, position_barre_fond)
         pygame.draw.rect(surface, couleur_barre_vie, position_barre)
 
-    def launch_projectile(self):
+    def lancer_de_boules(self):
         self.all_projectiles.add(Projectile(self))
     def move_right(self):
-        if not self.game.check_collision(self, self.game.all_monsters):
+        if not self.game.check_collision(self, self.game.tous_les_ennemis):
             self.rect.x += self.velocity
 
     def move_left(self):
         self.rect.x -= self.velocity
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, player):
+    def __init__(self, joueur):
         super().__init__()
         self.velocity = 7
-        self.player = player
-        self.image = pygame.image.load('projectil.png')
+        self.joueur = joueur
+        self.image = pygame.image.load('projectile.png')
         self.image = pygame.transform.scale(self.image, (70, 70))
         self.rect = self.image.get_rect()
-        self.rect.x = player.rect.x + 120
-        self.rect.y = player.rect.y + 80
+        self.rect.x = joueur.rect.x + 120
+        self.rect.y = joueur.rect.y + 80
         self.origin_image = self.image
         self.angle = 0
 
@@ -114,13 +116,13 @@ class Projectile(pygame.sprite.Sprite):
         self.image = pygame.transform.rotozoom(self.origin_image, self.angle, 1)
         self.rect = self.image.get_rect(center=self.rect.center)
     def remove(self):
-        self.player.all_projectiles.remove(self)
+        self.joueur.all_projectiles.remove(self)
     def move(self):
         self.rect.x += self.velocity
         self.rotate()
-        for monster in self.player.game.check_collision(self, self.player.game.tous_les_ennemis):
+        for monster in self.joueur.game.check_collision(self, self.joueur.game.tous_les_ennemis):
             self.remove()
-            monster.damage(self.player.attack)
+            monster.degat(self.joueur.attack)
         if self.rect.x > 1080:
             self.remove()
 
@@ -138,7 +140,7 @@ class Ennemis(pygame.sprite.Sprite):
         self.rect.y = 290
         self.velocity = random.randint(1, 2)
 
-    def damage(self, amount):
+    def degat(self, amount):
         self.health -= amount
         if self.health <= 0:
             self.rect.x = 1000 + random.randint(0, 300)
@@ -157,7 +159,7 @@ class Ennemis(pygame.sprite.Sprite):
         if not self.game.check_collision(self, self.game.all_players):
             self.rect.x -= self.velocity
         else:
-            self.game.player.damage(self.attack)
+            self.game.joueur.degat(self.attack)
 
 
 pygame.init()
@@ -205,7 +207,7 @@ while running:
             game.pressed[event.key] = True
 
             if event.key == pygame.K_SPACE:
-                game.player.launch_projectile()
+                game.joueur.lancer_de_boules()
 
         elif event.type == pygame.KEYUP:
             game.pressed[event.key] = False
@@ -213,3 +215,4 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_button_rect.collidepoint(event.pos):
                 game.start()
+
