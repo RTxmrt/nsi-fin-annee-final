@@ -26,6 +26,7 @@ class Game:
         self.tous_les_ennemis = pygame.sprite.Group()
         self.pressed = {}
         self.nb_ennemis_tues = 0
+        self.nb_mort = 0
 
     def start(self):
         self.jeu_demarre = True
@@ -37,6 +38,7 @@ class Game:
         self.joueur.health = self.joueur.max_health
         self.jeu_demarre = False
         self.nb_ennemis_tues = 0
+        self.nb_mort += 1
         
     def update(self, surface):
         font = pygame.font.SysFont("arial", 26)
@@ -185,6 +187,9 @@ banniere = pygame.image.load("bannière.png")
 banniere = pygame.transform.scale(banniere, (1080, 720))
 banniere_rect = banniere.get_rect()
 
+banniere_mort = pygame.image.load("bannieremort.png")
+banniere_mort = pygame.transform.scale(banniere_mort, (1080, 720))
+
 
 play_button = pygame.image.load("bouton play.png")
 play_button = pygame.transform.scale(play_button, ((500, 500)))
@@ -204,8 +209,12 @@ while running:
     if game.jeu_demarre:
         game.update(surface)
     else:
-        surface.blit(banniere, banniere_rect)
-        surface.blit(play_button, play_button_rect)
+        if game.nb_mort == 0:
+            surface.blit(banniere, banniere_rect)
+            surface.blit(play_button, play_button_rect)
+        else:
+            surface.blit(banniere_mort, banniere_rect)
+            surface.blit(play_button, play_button_rect)
     pygame.display.flip()
 
     for event in pygame.event.get():
