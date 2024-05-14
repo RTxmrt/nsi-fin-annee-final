@@ -1,3 +1,4 @@
+
 # coding : UTF-8
 
 """
@@ -153,6 +154,7 @@ class Ennemis(pygame.sprite.Sprite):
             self.rect.x = 1000 + random.randint(0, 300)
             self.velocity = random.randint(1, 3)
             self.health = self.max_health
+            self.game.nb_ennemis_tues += 1
 
     def barre_de_vie(self, surface):
         couleur_barre_vie = (133, 91, 197 )
