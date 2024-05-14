@@ -24,6 +24,7 @@ class Game:
         self.tout_les_joueurs.add(self.joueur)
         self.tous_les_ennemis = pygame.sprite.Group()
         self.pressed = {}
+        self.nb_ennemis_tues = 0
 
     def start(self):
         self.jeu_demarre = True
@@ -34,7 +35,12 @@ class Game:
         self.tous_les_ennemis = pygame.sprite.Group()
         self.joueur.health = self.joueur.max_health
         self.jeu_demarre = False
+        self.nb_ennemis_tues = 0
+        
     def update(self, surface):
+        font = pygame.font.SysFont("arial", 26)
+        nb_ennemis_tues_affichage = font.render(f"Nombre d'ennemis tués : {self.nb_ennemis_tues}", 1, (250, 250, 250))
+        surface.blit(nb_ennemis_tues_affichage, (20, 20))
         surface.blit(self.joueur.image, self.joueur.rect)
 
         self.joueur.barre_de_vie(surface)
