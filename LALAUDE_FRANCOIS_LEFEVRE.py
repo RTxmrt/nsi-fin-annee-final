@@ -8,8 +8,8 @@ Authors : Martin LALAUDE, Valentine FRANCOIS, Pierrick LEFEVRE
 Version : v_4
 URL Github : https://github.com/RTxmrt/nsi-fin-annee-final
 
-Nous nous sommes aidé de la video pygame explicatif de Graven et des conseils d'un programmeur professionel
-Pour les images, nous les avons trouvées sur internet que nous avons par la suite modifiées
+Nous nous sommes aidés de la video pygame explicative de Graven et des conseils d'un programmeur professionel
+Pour les images, nous les avons trouvées sur internet puis nous les avons détourées pour qu'elles correspondent a nos attentes
 """
 import pygame
 import math
