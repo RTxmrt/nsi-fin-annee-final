@@ -19,9 +19,9 @@ pygame.init()
 class Game:
     def __init__(self):
         self.jeu_demarre = False
-        self.all_players = pygame.sprite.Group()
+        self.tout_les_joueurs = pygame.sprite.Group()
         self.joueur = joueur(self)
-        self.all_players.add(self.joueur)
+        self.tout_les_joueurs.add(self.joueur)
         self.tous_les_ennemis = pygame.sprite.Group()
         self.pressed = {}
 
@@ -98,6 +98,7 @@ class joueur(pygame.sprite.Sprite):
     def move_left(self):
         self.rect.x -= self.velocity
 
+
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, joueur):
         super().__init__()
@@ -156,7 +157,7 @@ class Ennemis(pygame.sprite.Sprite):
         pygame.draw.rect(surface, couleur_barre_vie, position_barre)
 
     def forward(self):
-        if not self.game.check_collision(self, self.game.all_players):
+        if not self.game.check_collision(self, self.game.tout_les_joueurs):
             self.rect.x -= self.velocity
         else:
             self.game.joueur.degat(self.attack)
@@ -215,4 +216,3 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_button_rect.collidepoint(event.pos):
                 game.start()
-
